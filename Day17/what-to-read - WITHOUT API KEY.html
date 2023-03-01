@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>What to read today</title>
+
+	<style type="text/css">
+		
+        body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+        
+        article {
+            margin-bottom: 60px;
+        }
+
+	</style>
+</head>
+<body>
+
+	<h1>What to read today</h1>
+
+	<div id="app" aria-live="polite"></div>
+
+    <!-- Polyfill bundle from Polyfill.io to ensure browser backwards compatibility with the usage of Promise and the Fetch API -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Cfetch"></script>
+
+	<script>
+        
+        // Get the #app element
+        var app = document.querySelector('#app');
+
+        // API Key used, via an API call, to get the top stories from the Home section of The New York Times
+        var apiKey = 'YOUR-API-KEY';
+
+        // Get the top stories from the Home section of The New York Times, on page load
+        getHomeTopStories();
+
+        // Function to get the top stories from the Home section of The New York Times, via an API call
+        function getHomeTopStories () {
+
+            // Placeholder text, while the top stories are being retrieved
+            app.innerHTML = '<em>Getting top stories from the Home section of The New York Times...</em>';
+
+            fetch('https://api.nytimes.com/svc/topstories/v2/home.json?api-key=' + apiKey).then(function (response) {
+                
+                // The API call was successful!
+                if (response.ok) {
+                    return response.json();
+                // The API call was unsuccessful
+                } else {
+                    return Promise.reject(response);
+                }
+
+            }).then(function (data) {
+                
+                // Array of the top stories from the Home section of The New York Times
+                let homeTopStoriesArray = data.results;
+
+                // The HTML markup of the list of top stories to be inserted into the #app element
+                let html = '';
+
+                // Add the following, of each top story, to the HTML mark up to be inserted into the #app element:
+                // 1. Title, which is also hyperlinked
+                // 2. Byline
+                // 3. Abstract
+                homeTopStoriesArray.forEach ( (homeTopStory) => {
+                    html += 
+                        '<article>' +
+                            '<h2>' + '<a href="' + homeTopStory.short_url + '">' + homeTopStory.title + '</a></h2>' +
+                            '<p>' + homeTopStory.byline + '</p>' +
+                            '<p>' + homeTopStory.abstract + '</p>' +
+                        '</article>';
+                }, false);
+
+                // Insert the HTML markup of the list of top stories into the #app element
+                app.innerHTML = html;
+
+            }).catch(function (err) {
+                // There was an error with the API call
+                app.textContent = "Something went wrong retrieving the top stories from the Home section of The New York Times.";
+            });
+
+        }
+
+	</script>
+</body>
+</html>

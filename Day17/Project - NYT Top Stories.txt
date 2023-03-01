@@ -1,0 +1,18 @@
+Project
+-------
+
+NYT Top Stories
+
+
+Description
+-----------
+
+Use the New York Times API (https://developer.nytimes.com/) to display their top stories of the day on a webpage.
+
+For this one, you’ll need to register for a free API key (https://developer.nytimes.com/signup) (it takes less than a minute).
+
+The specific API endpoint you want for this one is their top stories endpoint (https://developer.nytimes.com/docs/top-stories-product/1/overview). It let’s you request the top stories from a specific section of their publication. The example below gets articles from the home category.
+
+https://api.nytimes.com/svc/topstories/v2/home.json?api-key=YOUR-API-KEY
+
+For this project, get an array of stories from the New York Times API, turn them into markup, and inject them into the #app element.

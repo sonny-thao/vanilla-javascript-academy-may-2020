@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Random Ron - No Duplicates</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		img {
+			height: auto;
+			max-width: 100%;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Random Ron - No Duplicates</h1>
+
+	<img alt="A photo of Ron Swanson" src="http://giphygifs.s3.amazonaws.com/media/iofbYa67AbBg4/giphy.gif">
+
+	<blockquote id="quote" aria-live="polite">
+		<em>Getting a fresh quote...</em>
+	</blockquote>
+
+	<p>
+		<button id="get-quote">More Ron</button>
+	</p>
+
+	<script>
+
+		// Get the blockquote and button elements
+		var quote = document.querySelector('#quote');
+		var btn = document.querySelector('#get-quote');
+
+		// Initialize an empty array to store returned Ron Swanson quotes
+		var quotesArray = [];
+
+		// Get a fresh quote and render it into the DOM
+		var getQuote = function () {
+
+			// Get a Ron Swanson quote
+			fetch('http://ron-swanson-quotes.herokuapp.com/v2/quotes').then(function (response) {								
+				if (response.ok) {
+					return response.json();
+				} else {
+					return Promise.reject(response);
+				}
+
+			}).then(function (data) {
+				
+				// Placeholder text, while a quote is retrieved
+				quote.innerHTML = "<em>Getting a fresh quote...</em>";
+				
+				// Get the returned quote
+				let returnedQuote = data[0];
+				
+				// If the returned quote isn't in the running array of Ron Swanson quotes, proceed with this if statement
+				if (quotesArray.indexOf(returnedQuote) == -1)
+				{
+					// We're only tracking 50 quotes, so remove the oldest quote from the end of the quotes array when the array's length is 50.
+					// An alternative approach would be resetting the quotes array by clearing it completely (quotesArray = [];). This should address how processing slows, once the 50 unique quotes build up and must be checked against.
+					if (quotesArray.length >= 50)
+					{
+						quotesArray.pop();
+					}
+
+					// Add the returned quote to the beginning of the running array of Ron Swanson quotes
+					quotesArray.unshift(returnedQuote);
+
+					// Assign the returned quote to the block quote's value
+					quote.textContent = returnedQuote;
+
+				}
+				// Otherwise, if the returned quote is in the running array of Ron Swanson quotes, get another quote
+				else
+				{
+					// Make a recursive call
+					getQuote();
+					
+					// Quit the current call of the getQuote function
+					return;
+				}
+
+			}).catch(function (error) {
+
+				quote.textContent = '[Something went wrong, sorry!] I have a joke for you... The government in this town is excellent, and uses your tax dollars efficiently.';
+			
+			});
+		};
+
+		// Get a quote on page load
+		getQuote();
+
+		// Get a quote when the #get-quote button is clicked
+		btn.addEventListener('click', getQuote, false);
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>What to read today - multiple sections</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		article {
+			margin-bottom: 3em;
+		}
+		
+		#section {
+			text-transform: capitalize;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>What to read today - multiple sections</h1>
+
+	<div id="app" aria-live="polite"></div>
+
+	<script>
+		
+		// Get the app element
+		var app = document.querySelector('#app');
+
+		// Store API key to a variable for easier access
+		var apiKey = 'YourAPIKey';
+
+		// Sections from The New York Times to retrieve top stories from.
+		// For reference, here are all possible sections from The New York Times: ['arts', 'automobiles', 'books', 'business', 'fashion', 'food', 'health', 'home', 'insider', 'magazine', 'movies', 'nyregion', 'obituaries', 'opinion', 'politics', 'realestate', 'science', 'sports', 'sundayreview', 'technology', 'theater', 't-magazine', 'travel', 'upshot', 'us', 'world'];
+		var sections = ['arts', 'books', 'science', 'technology', 'world'];
+
+		// Number of top stories to render from each section
+		var numberOfTopStories = 5;
+
+		// Get the top stories from each of the sections
+		sections.forEach(function getTopStories (section) {
+
+			// Get a section's top stories
+			fetch('https://api.nytimes.com/svc/topstories/v2/' + section + '.json?api-key=' + apiKey).then(function (response) {
+				if (response.ok) {
+					return response.json();
+				} else {
+					return Promise.reject(response);
+				}
+			}).then(function (data) {
+				
+				// Render the section and its top stories into the DOM
+				render(section, data.results.slice(0, numberOfTopStories));
+
+			}).catch(function (error) {
+				app.textContent = "Something went wrong retrieving top stories from The New York Times.";
+			});
+
+		});
+
+		/**
+		 * Render the section and its top stories into the DOM
+		 * @param  {String} section, The section to render
+		 * @param  {Array} articles, The top stories of the section to render
+		 */
+		var render = function (section, articles) {
+
+			// Insert the section name into the DOM with innerHTML
+			app.innerHTML += '<h2 id="section">' + section + '</h2>';
+
+			// Insert each of the top stories of the section into the DOM with innerHTML
+			// (Create a new array of markup strings with array.map(), then
+			// Combine them into one string with array.join(), then
+			// Insert them (articles) into the DOM with innerHTML)
+			app.innerHTML += articles.map(function (article) {
+				var html =
+					'<article>' +
+						'<h3><a href="' + article.url + '">' + article.title + '</a></h3>' +
+						'<p>' + article.byline + '</p>' +
+						'<p>' + article.abstract + '</p>' +
+					'</article>';
+				return html;
+			}).join('');
+
+		};
+		
+	</script>
+</body>
+</html>

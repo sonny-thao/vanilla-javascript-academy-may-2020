@@ -1,0 +1,14 @@
+Project
+-------
+
+Announcing the Count
+
+
+Description
+-----------
+
+Modify your character and word count project to announce the current count to screen reader users as it changes.
+
+We’ll be working with the completed project from yesterday. Changes to the content in #word-count and #character-count should be announced to screen reader users.
+
+Test this with an actual screen reader to hear how the announcements are actually made. Do they make sense? Do they provide enough context? What can you do differently if needed to make sure visually impaired users understand what’s happening?

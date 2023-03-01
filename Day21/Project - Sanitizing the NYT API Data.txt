@@ -1,0 +1,14 @@
+Project
+-------
+
+Sanitizing the NYT API Data
+
+
+Description
+-----------
+
+Modify your script that displays articles from the New York Times API to protect ourselves from cross-site scripting attacks.
+
+While the New York Times is a trust-worth organization, if their API were, for example, hacked, they could unknowingly send back malicious code.
+
+Before rendering API data into the DOM as markup, sanitize it to protect yourself from any malicious code that might get sent back.

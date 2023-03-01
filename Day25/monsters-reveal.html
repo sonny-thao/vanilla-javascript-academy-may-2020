@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Monsters! - Reveal</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		/**
+		 * A simple grid layout
+		 */
+		.row {
+			display: grid;
+			grid-template-columns: auto auto auto;
+			text-align: center;
+		}
+
+		.grid {
+			min-height: 6em;
+			padding: 1em;
+		}
+
+		/**
+		 * Make sure images scale
+		 */
+		img {
+			height: auto;
+			max-width: 100%;
+		}
+    
+        /**
+		 * Style the buttons containing the monster/sock/door images to not look like buttons
+		 */
+        [data-monster-or-sock-id] {
+            background-color: transparent;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+	<h1>Monsters! - Reveal</h1>
+    
+	<div id="app"></div>
+
+	<footer>
+		<hr>
+		<p class="text-small text-muted">Icons by <a href="https://thenounproject.com/term/door/311732/">Jamie Dickinson</a>, <a href="https://thenounproject.com/term/monster/184225/">Nicky Knicky</a>, <a href="https://thenounproject.com/term/monster/1510400/">Alvaro Cabrera</a>, <a href="https://thenounproject.com/term/monster/28460/">Eliricon</a>, <a href="https://thenounproject.com/term/monster/82823/">April Yang</a>, <a href="https://thenounproject.com/term/monster/1062009/">tk66</a>, <a href="https://thenounproject.com/term/monster/24990/">Alex WaZa</a>, <a href="https://thenounproject.com/term/monster/37212/">Husein Aziz</a>, <a href="https://thenounproject.com/term/monster/2236082">iconcheese</a>, and <a href="https://thenounproject.com/term/socks/38451/">Yazmin Alanis</a>.</p>
+	</footer>
+
+    <script>
+        /**
+        * Element.closest() polyfill
+        * https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#Polyfill
+        */
+        if (!Element.prototype.closest) {
+            if (!Element.prototype.matches) {
+                Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+            }
+            Element.prototype.closest = function (s) {
+                var el = this;
+                var ancestor = this;
+                if (!document.documentElement.contains(el)) return null;
+                do {
+                    if (ancestor.matches(s)) return ancestor;
+                    ancestor = ancestor.parentElement;
+                } while (ancestor !== null);
+                return null;
+            };
+        }
+    </script>
+
+	<script>
+		// The monsters and sock array
+		var monstersAndSockArray = [
+            {
+                src: 'monster1',
+                alt: 'A yellow, one-eyed, legless elephant looking monster.'
+            },
+            {
+                src: 'monster2',
+                alt: 'A yellow, one-eyed, bottom-fanged, smiling monster that is top heavy with two long, thin, dangly arms and two long, thin legs.'
+            },
+            {
+                src: 'monster3',
+                alt: 'A green, u-shaped monster with two eyes at the ends of the u-shape and teeth running along the inside of the u-shape. The monster is supported by two short, toothpick legs and it has two spaghetti-like arms that taper into circular paws with three claws.'
+            },
+            {
+                src: 'monster4',
+                alt: 'A red, legless, ghost-shaped monster with four arms, two small, beady eyes and two dull, floppy horns on the sides of its head.'
+            },
+            {
+                src: 'monster5',
+                alt: 'A green, circle-shaped, one-eyed monster with two hook-shaped arms, two short legs, and three horns protruding on either side of its curved head.'
+            },
+            {
+                src: 'monster6',
+                alt: 'A green, upside-down triangle-shaped monster with two upward curved horns, a mouth full of jagged fangs where its eye would be and one eye where its mouth would be. This monster is carried by two chicken-like legs protruding from either side of its bottom half.'
+            },
+            {
+                src: 'monster7',
+                alt: 'A purple, capsule-shaped monster with one large, gleamy eye, two tentacle arms and two stubby legs.'
+            },
+            {
+                src: 'monster8',
+                alt: 'A purple, legless, armless, egg-shaped monster with one eye and two dull horns that look more like ears at the top of its head. One horizontal line defines its mouth.'
+            },
+            {
+                src: 'monster9',
+                alt: 'A blue, ant-shaped monster with two large, circular, bulgy eyes on either side of its head. The monster has two short, stick arms and three short, stick legs along with a pair of wing-like protrusions on either side of its hips. Three, horizontal dots define its mouth.'
+            },
+            {
+                src: 'monster10',
+                alt: 'A blue, two-legged blob monster with two eyes protruding from the top of its head and an open mouth with bottom fangs.'
+            },
+            {
+                src: 'monster11',
+                alt: 'A black, two-armed, two-legged, two-eyed, hairy and burly monster with a wide, friendly smile on its face.'
+            },
+            {
+                src: 'sock',
+                alt: 'A pair of white, over-the-calf tube socks.'
+            }
+		];
+
+		// Get the #app element
+		var app = document.querySelector('#app');
+		
+		// Shuffle the monsters and sock array
+		shuffle(monstersAndSockArray);
+        
+        // Render the shuffled monsters and sock array
+        render(monstersAndSockArray);
+
+        // Listen for clicks on the entire document (event delegation/event bubbling)
+        document.addEventListener('click', showMonsterOrSock, false);
+
+        /**
+		 * Randomly shuffle an array
+		 * https://stackoverflow.com/a/2450976/1293256
+		 * @param  {Array} array The array to shuffle
+		 * @return {Array} array The shuffled array
+		 */
+		function shuffle(array) {
+
+            var currentIndex = array.length;
+            var temporaryValue, randomIndex;
+
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+
+            return array;
+        };
+
+        /**
+		 * Render an array into the DOM
+		 * @param  {Array} array, The shuffled monsters and sock array
+		 */
+        function render(monstersAndSockArray)
+        {
+            // Create the HTML and inject it into the DOM
+            app.innerHTML = 
+                '<p>Monsters or a pair of socks are hidden behind these doors. ' + 
+                    'Click on a door to reveal a monster or pair of socks. ' + 
+                    'If you find the pair of socks before you\'ve found all of the monsters, you lose.' + 
+                '</p>' +
+                '<div class="row">' + 
+                    monstersAndSockArray.map(function (monsterOrSock, index) {
+                        var html =
+                            '<div class="grid" aria-live="polite">' +
+                                '<button type="button" data-monster-or-sock-id="' + index +'">' +
+                                    '<img src="door.svg" alt="A brown outlined door behind which there is either a monster or a pair of socks.">' +
+                                '</button>' +
+                            '</div>';
+                        return html;
+                    }).join('') + 
+                '</div>';
+        }	
+
+        /**
+		 * Reveal the hidden monster or pair of socks, once a door is clicked
+		 * @param  {Event} event The click event that is delivered to the Document
+		 */
+        function showMonsterOrSock(event)
+        {   
+            // If a door image or its parent button element were clicked (determined by confirming its closest parent element contains the 
+            // '[data-monster-or-sock-id]' attribute), continue processing of this event listener function (showMonsterOrSock) to reveal the 
+            // hidden monster or pair of socks
+            if(event.target.closest('[data-monster-or-sock-id]'))
+            {
+                // Get the closest parent element of the clicked element.
+                // Either the 'img' or 'button' element will be clicked (via mouse or keyboard) and we'll be checking for the closest element containing
+                // the '[data-monster-or-sock-id]' attribute. If an 'img' element is clicked, its closest element will be the 'button' element.  If a
+                // 'button' element is clicked, its closest element will be itself. Thus, a 'button' element should always be found as the closest element.
+                var closestElement = event.target.closest('[data-monster-or-sock-id]');
+                
+                // Get the name ('src') of the monster or pair of socks hidden behind the door
+                var nameOfHiddenMonsterOrSock = monstersAndSockArray[closestElement.getAttribute('data-monster-or-sock-id')].src;
+
+                // Get the relating 'alt' value of the monster or pair of socks hidden behind the door
+                var altValueOfHiddenMonsterOrSock = monstersAndSockArray[closestElement.getAttribute('data-monster-or-sock-id')].alt;
+                
+                // Replace the 'door.svg' with the hidden 'monster#/sock.svg'.
+                // Note: The 'img' element and its parent 'button' element are both replaced by a new 'img' element to remove interactivity with the button.
+                //       Thus, ensuring the monster/sock is no longer clickable, making for a more user/accessible-friendly experience.
+                closestElement.parentNode.innerHTML = '<img src="' + nameOfHiddenMonsterOrSock + '.svg" alt="' + altValueOfHiddenMonsterOrSock + '">';
+                
+                // If the 'sock.svg' is shown, display a 'Game Over' alert, shuffle the monsters and sock behind each door, and restore all 'img' elements to the 'door.svg'
+                if(nameOfHiddenMonsterOrSock == 'sock')
+                {
+                    alert('------------------ Game Over ------------------ \n\r' + 
+                        'You\'ve fallen prey to the \'Socks of Doom\'! \n\r' +
+                        'Press \'OK\' to play again.');
+                    shuffle(monstersAndSockArray);
+                    render(monstersAndSockArray);
+                }
+            }
+        }
+
+	</script>
+</body>
+</html>

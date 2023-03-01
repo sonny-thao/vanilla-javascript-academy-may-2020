@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Character & Word Count</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label {
+			display: block;
+			width: 100%;
+		}
+
+		textarea {
+			min-height: 24em;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Character & Word Count</h1>
+
+	<label for="text">Enter your text below.</label>
+	<textarea id="text"></textarea>
+
+	<!-- NOTE: The 'aria-live' attribute is being used on the <p> tag to inform screen readers that the tag's content is dynamic and may change - and if there's a change, the new content should be read aloud. -->
+	<!-- NOTE: After much experimentation and research, I was able to use NVDA and FireFox to successfully read the dynamic content of the <p> tag. -->
+	<!-- NOTE: 'aria-live' doesn't work properly with nested HTML elements - thus, the bold '# words' and '# characters' parts of the sentence was removed. A work around is possible, but was beyond the scope of this project.-->
+	<p id="word-and-character-counts" aria-live="polite">You've written 0 words and 0 characters.</p>
+	
+	<script>
+		// Get the text area element
+		var text = document.querySelector('#text');
+		// Get the word and character counts element
+		var wordAndCharacterCounts = document.querySelector('#word-and-character-counts');
+
+		// Listen for changes to the text area content
+		text.addEventListener('input', function () {
+
+			// Get the word count
+			var words = text.value.split(/[\n\r\s]+/g).filter(function (word) {
+				return word.length > 0;
+			});
+
+			// Update the contents of the word and character counts elment with the current number of words and characters typed
+			wordAndCharacterCounts.textContent = "You've written " + words.length + " words and " + text.value.length + " characters."
+
+		}, false);
+	</script>
+</body>
+</html>

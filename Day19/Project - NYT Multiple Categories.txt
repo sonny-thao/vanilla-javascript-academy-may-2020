@@ -1,0 +1,18 @@
+Project
+-------
+
+NYT Multiple Categories
+
+
+Description
+-----------
+
+Modify your NYT Top Stories project to get articles from several categories.
+
+With the New York Times API, the category is the part right before .json in the API endpoint.
+
+You can view a list of categories here (https://developer.nytimes.com/docs/top-stories-product/1/routes/%7Bsection%7D.json/get).
+
+Get articles from three to five categories, then render the API data into markup and inject it into the #app element.
+
+Instead of rendering all of the articles, use the first five from each category. Add a heading before each section so that you know what category the articles are from.

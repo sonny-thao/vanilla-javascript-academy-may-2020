@@ -1,0 +1,18 @@
+Project
+-------
+
+Monster Shuffle
+
+
+Description
+-----------
+
+Take an array of monsters, mix them up, and display them in the DOM. It’s inspired by the movie Monsters, Inc.
+
+The template for this project includes an array of monsters (and one sock).
+
+Each monster (or sock) has a matching SVG in the source code. For example, there’s a monster3 in the array, and a monster3.svg in the source code.
+
+Shuffle the array of monsters, and render the matching SVG files into the #app element.
+
+Some simple CSS has been included so that you can focus on the JavaScript. It provides a simple three-column grid system, and makes img elements responsive.

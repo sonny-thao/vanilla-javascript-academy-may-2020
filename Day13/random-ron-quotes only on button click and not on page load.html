@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Random Ron</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Random Ron</h1>
+
+	<blockquote id="blockquote"></blockquote>
+
+	<p>
+		<button id="button">More Ron</button>
+	</p>
+
+	<!-- Polyfill bundle from Polyfill.io to ensure browser backwards compatibility with the usage of Promise and the Fetch API -->
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Cfetch"></script>
+	<script>
+		
+		// Get the following elements: blockquote, button
+		let quote = document.querySelector('blockquote');
+		let button = document.querySelector('button');
+
+		// Listen for button clicks to change the quote in the block quote element 
+		button.addEventListener('click', (event) => {
+
+			// Make a call to the Ron Swanson Quotes API for a random quote
+			fetch('https://ron-swanson-quotes.herokuapp.com/v2/quotes')
+			.then(function (response) {
+				// Successful API call
+				if (response.ok) {
+					// Pass along the response as a JSON object
+					return response.json();
+				}
+				// Failed API call
+				else {
+					// Pass along the response to be error handled
+					return Promise.reject(response);
+				}
+			})
+			.then(function (data) {
+				// Retrieve the quote from JSON object and set it as the value of the block quote element
+				quote.textContent = data[0];
+			})
+			.catch(function (error) {
+				// Failed API call - handle the passed in error
+				console.warn('The API call failed - something went wrong.', error);
+			}); 
+
+		}, false);
+
+	</script>
+</body>
+</html>

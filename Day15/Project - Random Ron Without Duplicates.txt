@@ -1,0 +1,12 @@
+Project
+-------
+
+Random Ron Without Duplicates
+
+
+Description
+-----------
+
+Modify your Random Ron script to prevent the same quote from showing up twice.
+
+Modify it so that if the same quote gets returned from the API in the last 50 quotes, you skip it and fetch another one instead.

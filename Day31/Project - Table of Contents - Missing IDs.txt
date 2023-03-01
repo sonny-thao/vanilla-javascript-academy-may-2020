@@ -1,0 +1,12 @@
+Project
+-------
+
+Table of Contents - Missing IDs
+
+
+Description
+-----------
+
+Modify your Table of Contents script to support headings that don’t have IDs on them.
+
+The markup has been modified so that certain headings don’t have IDs on them. When creating your table of contents, if the heading doesn’t have an ID to link to, create one and assign it to the heading.

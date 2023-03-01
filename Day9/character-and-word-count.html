@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Character & Word Count</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label {
+			display: block;
+			width: 100%;
+		}
+
+		textarea {
+			min-height: 24em;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Character & Word Count</h1>
+
+	<label for="text">Enter your text below.</label>
+	<textarea id="text"></textarea>
+
+	<p>You've written <strong><span id="word-count">0</span> words</strong> and <strong><span id="character-count">0</span> characters</strong>.</p>
+
+	<script>
+
+		// Retrieve the text area element
+		var textArea = document.querySelector('#text');
+		// Retrieve the word count element
+		var wordCount = document.querySelector('#word-count');
+		// Retrieve the character count element
+		var characterCount = document.querySelector('#character-count');
+
+		// Add an event listener on the text area element listening for real-time changes made to it
+		textArea.addEventListener('input', function (event) {
+
+			// Get the value of the text area element
+			var textAreaValue = textArea.value;
+
+			// Set the value of the character count element to the length of the value of the text area element
+			characterCount.textContent = textAreaValue.length;
+
+			// Create an array of words from the value of the text area.
+			// 1. Use the string.split() method and a regex of /[\n\r\s]+/g as the separator to create an array that captures the words of the text area.
+			// The /[\n\r\s]+/g regex catches spaces (\s) as well as line breaks (\n and \r depending on the operating system). The + catches one or more consecutive characters. And the g at the end is a flag for global, and prevents the regex for stopping after it finds its first match.
+			// (Note: If a space, carriage return, or newline are entered as the last 'character', this array will capture it as an empty string ('') entry.)
+			// 2. Use the Array.filter() method to eliminate the spaces, carriage returns, and newlines from the array of words.
+			var wordArray = textAreaValue.split(/[\n\r\s]+/g).filter( function (word) {
+
+				return word.length > 0;
+
+			}, false);
+			
+			// Set the value of the word count element to the length of the array of words
+			wordCount.textContent = wordArray.length;
+
+		}, false);
+
+	</script>
+	
+</body>
+</html>

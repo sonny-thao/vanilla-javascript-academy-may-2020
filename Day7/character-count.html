@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Character Count</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label {
+			display: block;
+			width: 100%;
+		}
+
+		textarea {
+			min-height: 24em;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Character Count</h1>
+
+	<label for="text">Enter your text below.</label>
+	<textarea id="text"></textarea>
+
+	<p>You've written <strong><span id="character-count">0</span> characters</strong>.</p>
+
+	<script>
+
+                // Retrieve the text area element
+                var textArea = document.querySelector('#text');
+                // Retrieve the character count element
+                var characterCount = document.querySelector('#character-count');
+
+                // Add an event listener on the text area element listening for real-time changes made to it
+                textArea.addEventListener('input', function (event) {
+                
+					// Update the character count element's text value with the number of characters in the text value of the text area element
+					// (Note: textArea.textContent will not work in place of textArea.value for textArea.value.length)
+					characterCount.textContent = textArea.value.length;
+                
+                }
+                , false);
+
+	</script>
+</body>
+</html>

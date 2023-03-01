@@ -1,0 +1,12 @@
+Project
+-------
+
+Table of Contents - Scope
+
+
+Description
+-----------
+
+Modify your Table of Contents script to keep it out of the global scope.
+
+Modify the script to keep all of it’s variables and functions out of the global scope.

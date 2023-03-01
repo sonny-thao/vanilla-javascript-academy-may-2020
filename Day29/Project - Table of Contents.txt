@@ -1,0 +1,14 @@
+Project
+-------
+
+Table of Contents
+
+
+Description
+-----------
+
+Dynamically create a table of contents based on the headings in a document.
+
+The document contains an element with the #table-of-contents ID. There are also an assortment of heading elements with unique IDs.
+
+Get all of the h2 elements, create a list of anchor links, and inject it into the #table-of-contents element.
