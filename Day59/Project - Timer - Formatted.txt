@@ -1,0 +1,16 @@
+Project
+-------
+
+Timer - Formatted
+
+
+Description
+-----------
+
+Format the time in our timer before rendering it into the UI.
+
+Instead of 60 seconds as our duration, let’s use 120, or two minutes.
+
+Before rendering the time into the UI, convert it into M:SS format.
+
+For example, the starting time should be displayed at 2:00. When the remaining time is 5 seconds, it should be displayed as 0:05.

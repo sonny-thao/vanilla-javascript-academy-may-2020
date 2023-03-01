@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Timer - Start & Pause</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			text-align: center;
+			width: 88%;
+		}
+
+		#app {
+			font-size: 2em;
+		}
+
+		p {
+			margin-top: 0;
+			padding: 0;
+		}
+
+		button {
+			margin-top: 20px;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>⏰ Timer - Start & Pause ⏰</h1>
+
+	<div id="app" aria-live="polite"></div>
+
+	<script>
+		
+		// *********
+		// Variables
+		// *********
+
+		var duration = 120;
+		var timer;
+
+		// *******
+		// Methods
+		// *******
+
+		/**
+		 * State-based UI Component
+		 * @param {String} selector The selector for the target element
+		 * @param {Object} options  Component options
+		 */
+		var Rue = function (selector, options) {
+			this.elem = document.querySelector(selector);
+			this.data = options.data;
+			this.template = options.template;
+		};
+
+		/**
+		 * Render a new UI
+		 */
+		Rue.prototype.render = function () {
+			this.elem.innerHTML = this.template(this.data);
+		};
+
+		/**
+		 * Stop the timer
+		 */
+		var stopTimer = function () {
+
+			// Timer has reached 0, so cancel the timed, repeating action of counting down every 1 second
+			clearInterval(timer);
+			
+		};
+
+		/**
+		 * Start the timer
+		 */
+		var startTimer = function () {
+
+			// Render the initial UI
+			app.render();
+
+			// Start the countdown timer
+			timer = setInterval(countdown, 1000);
+
+		};
+
+		/**
+		 * Countdown the timer by 1
+		 */
+		var countdown = function () {
+
+			// Reduce the time by 1 second
+			app.data.time--;
+
+			// The timer has reached 0
+			if (app.data.time < 1) {
+				
+				// Stop the countdown
+				stopTimer();
+				
+				// Set the flag to show the 'Start' button
+				app.data.showPauseButton = false;
+			
+			}
+
+			// Update the UI
+			app.render();
+
+		};
+
+		/**
+		 * Handle click events
+		 * @param  {Event} event The Event object
+		 */
+		var clickHandler = function (event) {
+
+			// The 'Start' button was clicked
+			if (event.target.hasAttribute('data-start-timer'))
+			{
+				// If the timer has reached 0, reset it to its original starting value before starting the countdown
+				if (app.data.time <= 0)
+				{
+					app.data.time = duration;
+				}
+				
+				// Set the flag to show the 'Pause' button
+				app.data.showPauseButton = true;
+
+				// Cancel any current countdown
+				stopTimer();
+
+				// Start the countdown
+				startTimer();
+			}
+			
+			// The 'Pause' button was clicked		
+			if (event.target.hasAttribute('data-pause-timer'))
+			{
+				// Set the flag to show the 'Start' button
+				app.data.showPauseButton = false;
+
+				// Cancel the current countdown
+				stopTimer();
+
+				// Render the current state, so the 'Start' button will appear in place of the 'Pause' button
+				app.render();
+			}
+
+			// The 'Restart' button was clicked
+			if (event.target.hasAttribute('data-restart-timer'))
+			{
+				// Set the flag to show the 'Pause' button
+				app.data.showPauseButton = true;
+
+				// Cancel the current countdown
+				stopTimer();
+
+				// Reset the countdown time to its original starting value
+				app.data.time = duration;
+
+				// Start the countdown
+				startTimer();
+			}
+
+		};
+
+		/**
+		 * Get the active timer HTML
+		 * @param  {Object} props The current component state data
+		 * @return {String}       The HTML string
+		 */
+		var getTimerHTML = function (props) {
+
+			// Get the minutes and seconds
+			var minutes = parseInt(props.time / 60, 10);
+			var seconds = props.time % 60;
+
+			// Return the formatted time (M:SS), along with the Start/Pause and Restart buttons
+			var html = 
+				minutes.toString() + ':' + seconds.toString().padStart(2, '0') + 
+				'<p>' +
+					(props.showPauseButton ? '<button type="button" data-pause-timer>Pause</button>' : '<button type="button" data-start-timer>Start</button>') + 
+					'<button type="button" data-restart-timer>Restart</button>' +
+				'</p>';
+
+			return html;
+
+		};
+
+		/**
+		 * Create the timer component
+		 * @param  {Object} props The component options
+		 */
+		var app = new Rue('#app', {
+			data: {
+				time: duration,
+				showPauseButton: false
+			},
+			template: function (props) {
+
+				// Show the current time in the M:SS format
+				return getTimerHTML(props);
+
+			}
+		});
+
+		// **************
+		// Inits & Events
+		// **************
+
+		app.render();
+		document.addEventListener('click', clickHandler);
+
+	</script>
+</body>
+</html>

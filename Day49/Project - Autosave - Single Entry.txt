@@ -1,0 +1,12 @@
+Project
+-------
+
+Autosave - Single Entry
+
+
+Description
+-----------
+
+Modify our form saver script to store all of the fields as a single entry in localStorage.
+
+Modify the script to store all of the fields into a single array or object that you save and retrieve from locationStorage. To avoid conflicts with yesterday’s project, you might want to give the localStorage item a different key name.

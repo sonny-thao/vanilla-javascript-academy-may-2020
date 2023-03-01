@@ -1,0 +1,22 @@
+Project
+-------
+
+API Cache - Fallback
+
+
+Description
+-----------
+
+Modify our API cache script to fallback to the cache if the API call fails—even if data has expired. Showing something, even if it’s a bit out of date, is better than showing nothing at all.
+
+In the template file, I’ve added a helper function called getEndpoint() that will randomly return either the real API endpoint or one that doesn’t exist and will fail.
+
+Use this in the fetch() method to make the API call. This deliberately induces a failure 50% of the time for the purposes of this project.
+
+I’ve also shortened to the “good for” time to just 5 seconds to make testing easier.
+
+Here’s what you need to do:
+
+    1. If there’s data in localStorage, and it hasn’t expired, use it.
+    2. Otherwise, call the API to get fresh data.
+    3. If the API fails and there’s expired data in localStorage, use that instead.

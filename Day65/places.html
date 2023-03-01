@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Explore</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 60em;
+			width: 88%;
+		}
+		.place-flex-container {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			align-items: center;
+		}
+		place {
+			margin-bottom: 3em;
+		}
+		img {
+			object-fit: cover;
+			margin-right: 1em;
+		}
+		h2 {
+			text-transform: capitalize;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Explore</h1>
+	<p>Explore cool, quirky places in your own backyard.</p>
+
+	<div id="app" aria-live="polite">Loading...</div>
+
+	<!-- Use Reef, a lightweight library, for creating reactive, state-based components and UI -->
+	<script src="https://cdn.jsdelivr.net/npm/reefjs@7/dist/reef.js"></script>
+
+	<!-- Polyfill bundle from Polyfill.io to ensure browser backwards compatibility with the usage of Promise and the Fetch API -->
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Cfetch"></script>
+
+	<script>
+
+		// *********
+		// Variables
+		// *********
+
+		// Create the "app" component
+		var app = new Reef ("#app", {
+			data: {},
+			template: function (props) {
+
+				// If there's no data (e.g., null), render an error message
+				if (props.places === null) {
+					return 'Something went wrong retrieving places to visit in Rhode Island.  Please refresh your browser.  If this problem persists, please re-visit this page at a later time.';
+				}
+
+				// If there's data, render the places to visit
+				return RenderPlacesToVisit(props);
+			}
+		});
+
+		// **************
+		// Inits & Events
+		// **************
+
+		GetPlacesToVisit();
+
+		// *******
+		// Methods
+		// *******
+
+		/**
+		 * Fetch data of places to visit in Rhode Island from the API
+		 */
+		function GetPlacesToVisit () {
+			fetch('https://vanillajsacademy.com/api/places.json').then(function (response) {
+				if (response.ok) {
+					return response.json();
+				} else {
+					return Promise.reject(response);
+				}
+			}).then(function (data) {
+				// Reactively update the data - this causes the render to happen
+				app.data.places = data;
+			}).catch(function (error) {
+				// Set the data to 'null' to indicte that an error message should be rendered
+				app.data.places = null;
+			});
+		}
+
+		/**
+		 * Render the places to visit in Rhode Island
+		 * @param props The data object of the "app" component (e.g., the places to visit in Rhode Island)
+		 */
+		function RenderPlacesToVisit (props) {
+			return props.places.map(function (place) {
+				var html = 
+					'<place class="place-flex-container">' +
+						'<img src="' + place.img + '" alt="' + place.place + '" height="200px" width="200px">' +
+						'<div>' +
+							'<h2><a href="' + place.url + '">' + place.place + '</a></h2>' +
+							'<p>' + place.location + '</p>' +
+							'<p>' + place.description + '</p>' +
+						'</div>' +
+					'</place>';
+				return html;
+			}).join('');
+		}
+
+	</script>
+</body>
+</html>

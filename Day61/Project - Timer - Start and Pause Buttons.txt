@@ -1,0 +1,16 @@
+Project
+-------
+
+Timer - Start and Pause Buttons
+
+
+Description
+-----------
+
+We’re going to add Start, Pause, and Restart buttons to our timer.
+
+We’re adding more complexity to what we’ve already learned, so today is all about thinking through the structure of your app.
+
+For this project, we’re going to add two always-present buttons below the countdown in the timer. One button will say Start when the timer is stopped, and Pause when it’s running. Clicking it starts or stops the timer without resetting the time.
+
+The second, Restart, will reset the time to its original value and start the timer over again.

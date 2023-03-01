@@ -1,0 +1,14 @@
+Project
+-------
+
+Autosave - Other Field Types
+
+
+Description
+-----------
+
+Modify our form saver script to handle field types beyond text inputs.
+
+The form has been modified to include a lot more fields. There’s now a select menu, radio buttons, and checkboxes.
+
+Modify the script to save those fields’ values to localStorage as well, and restore them into the form when the page loads.

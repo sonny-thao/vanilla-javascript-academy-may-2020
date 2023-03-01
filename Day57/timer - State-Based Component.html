@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Timer</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			text-align: center;
+			width: 88%;
+		}
+		.time {
+			font-weight: bold;
+			font-size: 5em;
+		}
+		button {
+			margin-top: 20px;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Timer</h1>
+
+	<div id="app" aria-live="polite">
+		<div class="time">60</div>
+		<div>seconds</div>
+	</div>
+	<button type="button">Start Countdown</button>
+
+	<script>
+
+		// *********
+		// Variables
+		// *********
+
+		// Get the 'Start Countdown' button, which will have a 'click' event listener added to it to start the countdown
+		var countDownButton = document.querySelector('button');
+
+		// Flag to indicate if the 'Start Countdown' button has been clicked or not.
+		// This is used to help eliminate the delay in countdown, once the 'Start Countdown' button is clicked.
+		var boolStartCountdownButtonClicked = false;
+
+
+		// *********
+		// Component Elements
+		// *********
+
+		/**
+		 * State-based UI Component
+		 * @param  {string} selector The selector for the element to render our template (AKA component) into
+		 * @param  {Object} options Object with our data and template:
+		 *								data: The data object holding the current state of the countdown value, whether it be 
+		 * 									  the default value (60) or if it was altered via Console through the use of 'timerComponent.data.countDownValue = '
+		 *								template: Template defining how the UI should look, based on different data states
+		 */
+		 var Component = function (selector, options) {
+			this.element = document.querySelector(selector);
+			this.data = options.data;
+			this.template = options.template;
+		}
+
+		/**
+		* Render a new component into the UI
+		*/
+		Component.prototype.render = function () {
+			this.element.innerHTML = this.template(this.data);
+		}
+
+		/**
+		* Countdown timer component defined
+		*/
+		var timerComponent = new Component (
+			// Get the app element holding the time value and time label - the time value will be updated during the countdown
+			'#app',
+			// Object with our data and template
+			{
+				// The data object holding the current state of the countdown value, whether it be 
+		 		// the default value (60) or if it was altered via Console through the use of 'timerComponent.data.countDownValue = '
+				data: {
+					countDownValue: 60
+				},
+				// Template defining how the UI should look, based on different data states
+				template: function (data) {
+					var html = '<div class="time">' + data.countDownValue +'</div>' +
+							'<div>seconds</div>';
+					return html;
+				}
+			}
+		);
+
+
+		// ***********************
+		// Inits & Event Listeners
+		//************************
+
+		// Add an event listener to the 'Start Countdown' button to start the countdown, when the button is clicked
+		countDownButton.addEventListener('click', countDown, false);
+
+
+		// *******
+		// Methods
+		// *******
+
+		/**
+		 * Count down, once the 'Start Countdown' button is clicked
+		 * @param  {Event} event The click event that is delivered to the 'Start Countdown' button
+		 */
+		function countDown(event)
+		{
+			// Store what the countdown value is initially set at, before the countdown begins, 
+			// so this value may be used to restart the countdown, if the 'Start Countdown' button is clicked again.
+			let originalCountDownValue = timerComponent.data.countDownValue;
+
+			// Don't count down, if the timer value is already 0
+			if (timerComponent.data.countDownValue === 0) return;
+
+			// This is the first time the 'Start Countdown' button is clicked, so reduce the countdown value by one
+			// to eliminate the delay of the countdown in the UI.
+			if (boolStartCountdownButtonClicked === false)
+			{
+				timerComponent.data.countDownValue--;
+			}
+
+			// Mark the 'Start Countdown' button as being clicked, so re-clicks of the 'Start Countdown' button don't
+			// further reduce the countdown value by one, as seen above, because it's no longer the first time counting down.
+			boolStartCountdownButtonClicked = true;
+
+			// Disable the 'Start Countdown' button until after the countdown finishes
+			event.target.disabled = true;
+
+			// Start the countdown at the interval of every 1 second
+			let countDown = window.setInterval(() => {
+				
+				// Refresh the app element with the countdown value, as the countdown happens
+				timerComponent.render();
+
+				// Reduce the countdown value by 1
+				timerComponent.data.countDownValue--;		
+			
+				// Stop the countdown, when the countdown value reaches 0
+				if (timerComponent.data.countDownValue < 0)
+				{
+					// Stop the countdown
+					window.clearInterval(countDown);
+
+					// Enable the 'Start Countdown' button, to allow another countdown from the top, if desired
+					event.target.disabled = false;
+
+					// Restore the countdown value to what it was initially set to before this countdown run
+					timerComponent.data.countDownValue = originalCountDownValue;
+				}
+
+			}, 1000);
+		}
+
+	</script>
+</body>
+</html>

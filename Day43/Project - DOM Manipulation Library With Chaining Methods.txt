@@ -1,0 +1,12 @@
+Project
+-------
+
+DOM Manipulation Library With Chaining Methods
+
+
+Description
+-----------
+
+Modify our DOM manipulation library to allow us to chain methods together.
+
+Modify any methods that you can to support chaining. Ideally, the methods to add and remove classes should be chainable.

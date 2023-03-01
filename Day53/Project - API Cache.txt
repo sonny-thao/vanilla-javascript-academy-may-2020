@@ -1,0 +1,22 @@
+Project
+-------
+
+API Cache
+
+
+Description
+-----------
+
+Create a magazine for pirates using an API, and use localStorage to cache the API data for improved performance and network resilience.
+
+The HTML for today’s project is a div with an ID of #app.
+
+For this assignment, you’re going to call The Scuttlebutt API and get back some pirate-themed articles.
+
+https://vanillajsacademy.com/api/pirates.json
+
+You’ll use that data to display a list of headlines and “pirate news blurbs.”
+
+Cache the API data in localStorage for a short time, and use that instead of making a fresh API call on subsequent visits or page reloads.
+
+How long you cache an API varies by how often the data is typically refreshed. For this project, shorter is better because it makes testing easier.

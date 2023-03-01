@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Form Autosave - Single Entry</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label,
+		input,
+		textarea {
+			display: block;
+			width: 100%;
+		}
+
+		input,
+		textarea {
+			margin-bottom: 1em;
+		}
+
+		textarea {
+			height: 8em;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Form Autosave - Single Entry</h1>
+
+	<form class="save-me" id="save-me">
+
+		<label for="name">Name</label>
+		<input type="text" name="name" id="name">
+
+		<label for="address">Address</label>
+		<input type="text" name="address" id="address">
+
+		<label for="email">Email</label>
+		<input type="email" name="email" id="email">
+
+		<label for="more">Additional thoughts?</label>
+		<textarea name="more" id="more"></textarea>
+
+		<p>
+			<button type="submit">Submit</button>
+		</p>
+
+	</form>
+
+	<script>
+		// *********
+		// Variables
+		// *********
+
+		// Key used to store the form data to localStorage
+		var storageKey = 'formFieldsObject';
+
+		// ***********************
+		// Inits & Event Listeners
+		// ***********************
+
+		// Load saved form data from localStorage
+		loadData();
+
+		// Listen for input events
+		document.addEventListener('input', inputHandler, false);
+
+		// Listen for submit events
+		document.addEventListener('submit', submitHandler, false);
+
+		// *********
+		// Methods
+		// *********
+
+		/**
+		 * Get an ID for a field
+		 * @param  {Node}   field The field
+		 * @return {String}       The ID
+		 */
+		function getID(field) {
+
+			if (field.id.length > 0) {
+				return field.id;
+			}
+
+			if (field.name.length > 0) {
+				return field.name;
+			}
+
+			return null;
+
+		}
+
+		/**
+		 * Load saved form data from localStorage
+		 */
+		function loadData() {
+
+			// Get saved form data from localStorage
+			var formFieldsObject = localStorage.getItem(storageKey);
+
+			// If there's no saved form data from localStorage, skip loading saved data to the form
+			if(!formFieldsObject) return;
+
+			// Retrieve the JSON object from localStorge that holds the saved form data 
+			formFieldsObject = JSON.parse(formFieldsObject);
+
+			// Get all of the form field elements
+			var fields = document.querySelectorAll('#save-me input, #save-me textarea');
+
+			// Loop through each form field and load any saved data from the JSON object
+			Array.prototype.slice.call(fields).forEach(function (field) {
+
+				// If the field has no usable Id, skip it
+				var id = getID(field);
+				if (!id) return;		
+
+				// If the field has no saved value, skip loading it
+				// NOTE: Not having this check results in 'undefined' appearing in the field
+				if (!formFieldsObject[id]) return;
+
+				// Set the field value to its correlating saved data from the JSON object
+				field.value = formFieldsObject[id];
+
+			});
+
+		}
+
+		/**
+		 * Handle input events
+		 * @param  {Event} event The event object
+		 */
+		function inputHandler(event) {
+
+			// Only run for fields in the #save-me form
+			if (!event.target.closest('#save-me')) return;
+
+			// Get an ID for the field
+			var id = getID(event.target);
+			if (!id) return;
+
+			// Get saved form data from localStorage
+			var formFieldsObject = localStorage.getItem(storageKey);
+
+			// If there's no saved form data from localStorage, create a new, empty JSON object to begin storing the form data
+			if(!formFieldsObject) {
+				formFieldsObject = {};
+			}
+			// Otherwise, retrieve the JSON object from localStorge that holds the saved form data 
+			else {
+				formFieldsObject = JSON.parse(formFieldsObject);
+			}
+
+			// Store the field value into the JSON object that will be stored in localStorage
+			formFieldsObject[id] = event.target.value;
+			
+			// Save the JSON object to localStorage
+			localStorage.setItem(storageKey, JSON.stringify(formFieldsObject));
+
+		}
+
+		/**
+		 * Handle submit events
+		 * @param  {Event} event The event object
+		 */
+		function submitHandler(event) {
+
+			// Only run for the #save-me form
+			if (event.target.id !== 'save-me') return;
+
+			// Delete saved data from localStorage
+			localStorage.removeItem(storageKey);
+
+		}
+
+	</script>
+</body>
+</html>

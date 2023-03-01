@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Timer - Formatted</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			text-align: center;
+			width: 88%;
+		}
+
+		#app {
+			font-size: 2em;
+		}
+
+		p {
+			margin-top: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Timer - Formatted</h1>
+
+	<div id="app"></div>
+
+	<script>
+		/**
+		* String.prototype.padStart() polyfill
+		* https://github.com/uxitten/polyfill/blob/master/string.polyfill.js
+		* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+		*/
+		if (!String.prototype.padStart) {
+			String.prototype.padStart = function padStart(targetLength,padString) {
+				targetLength = targetLength>>0; //truncate if number or convert non-number to 0;
+				padString = String((typeof padString !== 'undefined' ? padString : ' '));
+				if (this.length > targetLength) {
+					return String(this);
+				}
+				else {
+					targetLength = targetLength-this.length;
+					if (targetLength > padString.length) {
+						padString += padString.repeat(targetLength/padString.length); //append to original to ensure we are longer than needed
+					}
+					return padString.slice(0,targetLength) + String(this);
+				}
+			};
+		}
+	</script>
+
+	<script>
+		// *********
+		// Variables
+		// *********
+
+		var duration = 120;
+		var timer;
+
+		// *******
+		// Methods
+		// *******
+
+		/**
+		 * State-based UI Component
+		 * @param {String} selector The selector for the target element
+		 * @param {Object} options  Component options
+		 */
+		var Rue = function (selector, options) {
+			this.elem = document.querySelector(selector);
+			this.data = options.data;
+			this.template = options.template;
+		};
+
+		/**
+		 * Render a new UI
+		 */
+		Rue.prototype.render = function () {
+			this.elem.innerHTML = this.template(this.data);
+		};
+
+		/**
+		 * Stop the timer
+		 */
+		var stopTimer = function () {
+			if (app.data.time > 0) return;
+			clearInterval(timer);
+		};
+
+		/**
+		 * Start the timer
+		 */
+		var startTimer = function () {
+
+			// Reset app data
+			app.data.time = duration;
+
+			// Render the initial UI
+			app.render();
+
+			// Start the countdown timer
+			timer = setInterval(countdown, 1000);
+
+		};
+
+		/**
+		 * Countdown the timer by 1
+		 */
+		var countdown = function () {
+
+			// Reduce the time by 1 second
+			app.data.time--;
+
+			// Check if the timer should be stopped
+			stopTimer();
+
+			// Update the UI
+			app.render();
+
+		};
+
+		/**
+		 * Handle click events
+		 * @param  {Event} event The Event object
+		 */
+		var clickHandler = function (event) {
+
+			// Only run if the restart button was clicked
+			if (!event.target.hasAttribute('data-restart-timer')) return;
+
+			// Start the timer
+			startTimer();
+
+		};
+
+		/**
+		 * Create the timer component
+		 * @param  {Object} props The component options
+		 */
+		var app = new Rue('#app', {
+			data: {
+				time: duration
+			},
+			template: function (props) {
+
+				// If the timer is done, show a button to restart it
+				if (props.time < 1) {
+					return '⏰ <p><button data-restart-timer>Restart Timer</button></p>';
+				}
+
+				// Otherwise, show the current time in the M:SS format
+				return timeInMSSFormat(props.time);
+
+			}
+		});
+
+		/**
+		 * Get the current time in the M:SS format
+		 * @param  {Number} currentTime The number value of the current time
+		 * @return  {String} The current time in the M:SS format
+		 */
+		function timeInMSSFormat (currentTime) {
+
+			// Get the minutes as an integer (a whole number)
+			let minutes = parseInt(currentTime / 60, 10);
+
+			// Get the seconds
+			let seconds = (currentTime % 60);
+
+			// Return the current time in the M:SS format
+			return minutes.toString() + ':' + seconds.toString().padStart(2, '0');
+
+		}
+
+		// **************
+		// Inits & Events
+		// **************
+
+		startTimer();
+		document.addEventListener('click', clickHandler);
+	</script>
+</body>
+</html>

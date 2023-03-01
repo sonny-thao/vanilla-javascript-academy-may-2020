@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>API Cache</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+		article {
+			margin-bottom: 3em;
+		}
+
+		h2 {
+			text-transform: capitalize;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>API Cache</h1>
+	<h1><em><strong>The Scuttlebutt</strong>&mdash;the number one source for pirate news!</em></h1>
+
+	<div id="app" aria-live="polite">
+		Loading...
+	</div>
+
+	<!-- Polyfill bundle from Polyfill.io to ensure browser backwards compatibility with the usage of Promise and the Fetch API -->
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Cfetch"></script>
+
+	<script>
+		
+		// *********
+		// Variables
+		// *********
+
+		// Get the app element, where the pirate articles will render
+		var app = document.querySelector('#app');
+
+		// Key used to store the pirate articles in localStorage
+		var localStorageKeyForPirateArticles = 'pirateArticles';
+
+		// ***********************
+		// Inits & Event Listeners
+		//***********************
+
+		// Check localStorage for any pirate articles saved in localStorage
+		var savedPirateArticles = localStorage.getItem(localStorageKeyForPirateArticles);
+
+		// If there are no saved pirate articles in localStorage, make a call to Vanilla JS Academy's API endpoint 
+		// to get pirate articles and save them to localStorage
+		if(!savedPirateArticles)
+		{
+			// Get the pirate articles
+			console.log('Load from API');
+			getPirateArticles();
+		}
+		// If there are saved pirate articles in localStorage, make sure they're fresh and not old/expired/dated - otherwise,
+		// make a call to Vanilla JS Academy's API endpoint to get fresh pirate articles and save them to localStorage
+		else
+		{
+			// Get the JSON object holding the saved pirate articles and its saved timestamp that's used to determine the pirate articles' freshness
+			savedPirateArticles = JSON.parse(localStorage.getItem(localStorageKeyForPirateArticles));
+
+			// If the saved pirate articles are fresh (< 1 minute old), render them
+			if(isDataValid(savedPirateArticles, 1000 * 60)) {
+				console.log('Load from Local Storage/Cache');
+				renderPirateArticles(savedPirateArticles.data);
+			}
+			// Otherwise, get a fresh set of pirate articles
+			else {
+				console.log('Load from API');
+				getPirateArticles();
+			}
+		}
+		
+
+		// *******
+		// Methods
+		// *******
+
+		/**
+		* Get the pirate articles from Vanilla JS Academy's API endpoint of 'https://vanillajsacademy.com/api/pirates.json'
+		*/
+		function getPirateArticles() {
+			fetch('https://vanillajsacademy.com/api/pirates.json').then(function (response) {
+				if (response.ok) {
+					return response.json();
+				} else {
+					return Promise.reject(response);
+				}
+			}).then(function (data) {
+
+				// Get the pirate articles
+				var pirateArticlesArray = data.articles;
+
+				// Save the pirate articles to localStorage
+				// with a UTC timestamp of now
+				var savedPirateArticles = {
+					data: pirateArticlesArray,
+					timestamp: new Date().getTime()
+				};
+				localStorage.setItem(localStorageKeyForPirateArticles, JSON.stringify(savedPirateArticles));
+
+				// Render the pirate articles into the DOM
+				renderPirateArticles(pirateArticlesArray);
+
+			}).catch(function (error) {
+				app.textContent = "Something went wrong retrieving pirate articles from Vanilla JS Academy.";
+			});
+		}
+
+		/**
+		* Render the pirate articles
+		* @param  {Array} pirateArticlesArray  The array of pirate articles either retrieved from localStorage or Vanilla JS Academy
+		*/
+		function renderPirateArticles(pirateArticlesArray) {
+			
+			// Create a new array of markup strings with array.map(), then
+			// Combine them into one string with array.join(), then
+			// Insert them into the DOM with innerHTML
+			app.innerHTML = pirateArticlesArray.map(function (article) {
+				var html =
+					'<article>' +
+						'<h2>' + sanitizeHTML(article.title) + '</h2>' +
+						'<p>By ' + sanitizeHTML(article.author) + '</p>' +
+						'<p>' + sanitizeHTML(article.article) + '</p>' +
+					'</article>';
+				return html;
+			}).join('');
+
+		}
+
+		/**
+		* Sanitize and encode all HTML in a user-submitted string
+		* (c) 2018 Chris Ferdinandi, MIT License, https://gomakethings.com
+		* @param  {String} str  The user-submitted string
+		* @return {String} str  The sanitized string
+		*/
+		function sanitizeHTML(str) {
+			var temp = document.createElement('div');
+			temp.textContent = str;
+			return temp.innerHTML;
+		}
+
+		/**
+		* Check if saved data is still valid
+		* @param  {Object}  saved   Saved data in localStorage
+		* @param  {Number}  goodFor Amount of time in milliseconds that the data is good for
+		* @return {Boolean}         If true, data is still valid
+		*/
+		function isDataValid(saved, goodFor) {
+
+			// Check that there's data, and a timestamp key
+			if (!saved || !saved.data || !saved.timestamp) return false;
+
+			// Get the difference between the timestamp and current time
+			var difference = new Date().getTime() - saved.timestamp;
+
+			return difference < goodFor;
+
+		}
+
+	</script>
+</body>
+</html>

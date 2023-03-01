@@ -1,0 +1,22 @@
+Project
+-------
+
+Places
+
+
+Description
+-----------
+
+Build an app that lets you find interesting things to do near where you live.
+
+I have a simple API setup with some data from the quirkiest state in the United States: Rhode Island.
+
+https://vanillajsacademy.com/api/places.json
+
+If you’d prefer, you can create a JSON file with places near you and use that instead (you can use fetch() to get local files, too).
+
+This project includes a heading, intro paragraph, and an empty #app element to render your content into.
+
+Get location data from the API, and display the places from the API in the #app element using state-based UI.
+
+For this project, I would encourage you to use Reef (https://reefjs.com/), my state-based UI library that uses the same conventions as the Rue() component we’ve been using so far.  It includes built-in data sanitization, and some additional extras we’ll be using in the next few lessons. I’ve preloaded it into the template for you.  (You can always convert your project over later, though, if you’d prefer to stick with Rue() for now.)

@@ -1,0 +1,22 @@
+Project
+-------
+
+DOM Manipulation Library
+
+
+Description
+-----------
+
+Build a small DOM manipulation library (a bit like a small, personal jQuery).
+
+The template includes a paragraph with some buttons, and an unordered list.
+
+It also includes some CSS for the button styles.
+
+Create a DOM manipulation library with public methods you can use to…
+
+    - Get an array of items from the DOM.
+    - Get the first and last matching items from the DOM.
+    - Add and remove a class to all matching elements.
+
+It should work like jQuery, where you pass in a selector, and can then call helper functions on your matching elements.

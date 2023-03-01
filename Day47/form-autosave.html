@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<title>Form Autosave</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label,
+		input,
+		textarea {
+			display: block;
+			width: 100%;
+		}
+
+		input,
+		textarea {
+			margin-bottom: 1em;
+		}
+
+		textarea {
+			height: 8em;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Form Autosave</h1>
+
+	<form class="save-me" id="save-me">
+
+		<label for="name">Name</label>
+		<input type="text" name="name" id="name" data-form-field>
+
+		<label for="address">Address</label>
+		<input type="text" name="address" id="address" data-form-field>
+
+		<label for="email">Email</label>
+		<input type="email" name="email" id="email" data-form-field>
+
+		<label for="more">Additional thoughts?</label>
+		<textarea name="more" id="more" data-form-field></textarea>
+
+		<p>
+			<button type="submit" id="submit">Submit</button>
+		</p>
+
+	</form>
+
+    <script>
+
+		/**
+		* Element.matches() polyfill (simple version)
+		* https://developer.mozilla.org/en-US/docs/Web/API/Element/matches#Polyfill
+		*/
+		if (!Element.prototype.matches) {
+			Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+		}
+
+  	</script>
+
+	<script>
+
+        // *********
+		// Variables
+        // *********
+
+        // Get all form field elements (inputs, text area)
+        var formFieldsArray = Array.prototype.slice.call(document.querySelectorAll('[data-form-field]'));
+
+        // Get submit button element
+        var submitButton = document.querySelector('#submit');
+
+
+        // ***********************
+		// Inits & Event Listeners
+		// ***********************
+
+        // On page load, check Local Storage for any saved, in-progress data to load into the form
+        restoreSavedFormData();
+        
+        // Listen for any and all changes to the values of the form field elements on the  
+        // entire document (event delegation/event bubbling) and autosave any typed data to Local Storage.
+        document.addEventListener('input', autoSaveToLocalStorage, false);
+
+        // Listen for a click of the 'Submit' button and delete any saved data from Local Storage
+        submitButton.addEventListener('click', deleteFromLocalStorage, false);
+
+
+        // *********
+		// Methods
+		// *********
+
+        /**
+		 * Restore any saved, in-progress form data from Local Storage
+		 */
+        function restoreSavedFormData()
+        {
+            formFieldsArray.forEach((element) => {
+                if(localStorage.getItem(element.name))
+                {
+                    element.value = localStorage.getItem(element.name);
+                }
+            });
+        }
+
+        /**
+		 * Event listener callback function that autosaves any typed data to Local Storage.
+		 */
+        function autoSaveToLocalStorage(event)
+        {        
+            formFieldsArray.forEach((element) => {
+                if(event.target.matches('#' + element.name))
+                {
+                    localStorage.setItem(element.name, event.target.value);
+                }
+            });
+        }
+
+        /**
+         * Event listener callback function that deletes any saved data from Local Storage, if the form is submitted.
+         */
+        function deleteFromLocalStorage(event)
+        {
+            formFieldsArray.forEach((element) => {
+                localStorage.removeItem(element.name);
+            });
+        }
+
+	</script>
+</body>
+</html>

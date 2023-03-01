@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>DOM Manipulation Library</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+
+		.btn-blue {
+			background-color: #0088cc;
+			color: #ffffff;
+		}
+
+		.btn-purple {
+			background-color: rebeccapurple;
+			color: #ffffff;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>DOM Manipulation Library</h1>
+
+	<p>All of the fun here happens in the console.</p>
+
+	<p>
+		<button class="btn-blue" id="button-1">Button 1</button>
+		<button class="btn-blue" id="button-2">Button 2</button>
+		<button class="btn-blue" id="button-3">Button 3</button>
+	</p>
+
+	<ul>
+		<li>Item 1</li>
+		<li>Item 2</li>
+		<li>Item 3</li>
+	</ul>
+
+	<script>
+		var $ = (function () {
+
+			// Create new constructor function
+			var Constructor = function (selector) {
+				this.allElements = document.querySelectorAll(selector);
+			};
+
+			// *********
+			// Methods
+			// *********
+
+			/**
+			* Get all matching elements in the DOM as an array
+			* @return {Array} The array of objects representing all matched elements
+			*/
+			Constructor.prototype.getAllMatchingElements = function () {
+				return Array.prototype.slice.call(this.allElements);
+			};
+
+			/**
+			* Get the first matching element in the DOM
+			* @return {HTMLElement} The object representing the first-matched element
+			*/
+			Constructor.prototype.getFirstMatchingElement = function () {
+				return this.allElements[0];
+			};
+
+			/**
+			* Get the last matching element in the DOM
+			* @return {HTMLElement} The object representing the last-matched element
+			*/
+			Constructor.prototype.getLastMatchingElement = function () {
+				return this.allElements[this.allElements.length - 1];
+			};
+
+			/**
+			* Get the first and last matching elements in the DOM
+			* @return {Array} The array of objects representing the first and last matched elements
+			*/
+			Constructor.prototype.getFirstAndLastMatchingElements = function () {
+				
+				// Array holding the first and last matched elements
+				var firstAndLastElementsArray = [];
+
+				// Get the first and last matched elements and place them into the array storing them
+				firstAndLastElementsArray.push(this.getFirstMatchingElement());
+				firstAndLastElementsArray.push(this.getLastMatchingElement());
+				
+				// Return the array storing the first and last matched elements
+				return firstAndLastElementsArray;
+			};
+			
+			/**
+			* Add a class to all elements in an array
+			* @param  {DOMString} classAttributeValue The class to add to all the elements in an array (e.g., "btn-purple")
+			*/
+			Constructor.prototype.addClassToAllElements = function (classAttributeValue) {
+				this.getAllMatchingElements().forEach((element) => {
+					if (!element) return;
+					element.classList.add(classAttributeValue);
+				});
+			};
+
+			/**
+			* Remove a class from all elements in an array
+			* @param  {DOMString} classAttributeValue The class to remove from all the elements in an array (e.g., "btn-purple")
+			*/
+			Constructor.prototype.removeClassFromAllElements = function (classAttributeValue) {
+				this.getAllMatchingElements().forEach((element) => {
+					if (!element) return;
+					element.classList.remove(classAttributeValue);
+				});
+			};
+
+			// Return the constructor
+			return Constructor;
+
+		})();
+	</script>
+</body>
+</html>

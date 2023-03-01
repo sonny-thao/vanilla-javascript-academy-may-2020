@@ -1,0 +1,16 @@
+Project
+-------
+
+Debugging Broken Code
+
+
+Description
+-----------
+
+We’re going to look at a broken version of the Monsters! game and get it working again.
+
+I took a working version of the game and made a bunch of small breaking changes. Use the console and some detective work to figure out what’s not working, and why, and make the needed changes.
+
+You’re looking for five bugs. One of the bugs doesn’t break the game, so it’s a bit harder to find.
+
+If you want to share your code, I would recommend commenting out the broken line, copy/pasting a fresh version, and fixing that. Prefix the broken line with // @bug {description of what's wrong}.
