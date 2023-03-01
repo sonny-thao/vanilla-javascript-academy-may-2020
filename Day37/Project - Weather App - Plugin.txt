@@ -1,0 +1,17 @@
+Project
+-------
+
+Weather App - Plugin
+
+
+Description
+-----------
+
+Modify our weather app script to convert it into a plugin.
+
+Modify the script to let developers:
+
+- Pass in their own selector to render the weather into.
+- Decide whether to show temperatures in Fahrenheit of Celsius.
+- Change what message is shown (ex. It's currently {temperature} and {conditions} in {location}).
+- Enable or disable the icon for the weather conditions.

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<title>Weather App - Plugin</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 30em;
+			text-align: center;
+			width: 88%;
+		}
+
+		p {
+			font-size: 2em;
+			margin: 0 0 0.5em;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Weather App - Plugin</h1>
+
+    <!-- Used with the default settings for the current weather conditions plugin -->
+    <!-- <div id="app" aria-live="polite">Checking the weather near you...</div> -->
+    
+    <!-- Used with the user-defined settings for the current weather conditions plugin -->
+    <div id="current-weather-conditions" aria-live="polite">Checking the weather near you...</div>
+    
+    <!-- Polyfill bundle from Polyfill.io to ensure browser backwards compatibility with the usage of Object.assign(), Promise, and the Fetch API -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CObject.assign%2Cfetch"></script>
+
+    <script>
+
+        // Use the default settings for the current weather conditions plugin
+        // getCurrentWeatherConditions();
+
+        // Use the user-defined settings for the current weather conditions plugin
+        getCurrentWeatherConditions({
+            idSelector: 'current-weather-conditions',
+            temperatureScale : 'Celsius',
+            weatherMessage: 'Current weather conditions in {City}, {State}:  {Temperature}, {Conditions}',
+            weatherIcon: false
+        });
+
+        // Get the current weather conditions
+        // Note: This is the main function for the current weather conditions plugin
+        function getCurrentWeatherConditions(userDefinedCurrentWeatherConditionsSettings)
+        {
+            // *********
+            // Variables
+            // *********
+
+            // Store the weather API key to a variable for easier configuration
+            var apiKey = 'YOUR-API-KEY';
+       
+            // Define the default settings for the current weather conditions plugin
+            var defaultCurrentWeatherConditionsSettings = {
+                idSelector: 'app',
+                temperatureScale : 'Fahrenheit',
+                weatherMessage: 'It\'s currently {Temperature} with {Conditions} in {City}, {State}.',
+                weatherIcon: true
+            };
+
+            // Merge the user-defined settings with the default settings - use the resulting settings to retrieve the current weather conditions
+            var currentWeatherConditionsSettings = Object.assign(defaultCurrentWeatherConditionsSettings, userDefinedCurrentWeatherConditionsSettings);
+
+            // Get the element of the specified id - this is where the current weather conditions information will be rendered
+            var currentWeatherConditionsElement = document.querySelector('#' + currentWeatherConditionsSettings.idSelector);
+
+            // *****
+            // Inits
+            // *****
+
+            // Get the user's location by IP address
+            // Then, pass that into the weather API and get the current weather
+            fetch('https://ipapi.co/json').then(function (response) {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return Promise.reject(response);
+                }
+            }).then(function (data) {
+                // Pass data into another API request
+                // Then, return the new Promise into the stream
+                return fetch('https://api.weatherbit.io/v2.0/current?key=' + apiKey + '&lat=' + data.latitude + '&lon=' + data.longitude);
+            }).then(function (response) {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return Promise.reject(response);
+                }
+            }).then(function (data) {
+                // Pass the first weather item into a helper function to render the UI
+                renderWeather(data.data[0]);
+            }).catch(function () {
+                renderNoWeather();
+            });
+
+            // *******
+            // Methods
+            // *******
+            
+            /**
+            * Sanitize and encode all HTML in a user-submitted string
+            * @param  {String} str  The user-submitted string
+            * @return {String} str  The sanitized string
+            */
+            function sanitizeHTML (str) {
+                var temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            }
+
+            /**
+            * Convert Fahrenheit to Celcius
+            * @param  {String} temp The temperature in Fahrenheit
+            * @return {Number}      The temperature in Celcius
+            */
+            function fahrenheitToCelcius (temp) {
+                return (parseFloat(temp) - 32) * 5/9;
+            }
+
+            /**
+            * Convert Celcius to Fahrenheit
+            * @param  {String} temp The temperature in Celcius
+            * @return {Number}      The temperature in Fahrenheit
+            */
+            function celciusToFahrenheit (temp) {
+                return (parseFloat(temp) * 9/5) + 32;
+            }
+
+            /**
+            * Render the weather data into the DOM
+            * @param  {Object} weather The weather data object
+            */
+            function renderWeather (weather) {
+                currentWeatherConditionsElement.innerHTML =
+                    getWeatherIconStringHtmlMarkup(weather, currentWeatherConditionsSettings) + 
+                    getWeatherMessageStringHtmlMarkup(weather, currentWeatherConditionsSettings);
+            }
+
+            /**
+            * Display a message when no weather data can be found
+            */
+            function renderNoWeather () {
+                currentWeatherConditionsElement.innerHTML = 'Unable to get weather data at this time. Sorry!';
+            }
+            
+            /**
+            * Get the string HTML markup of the weather icon
+            * @param  {Object} weatherData The weather data object retrieved from Weatherbit.io containing the current weather conditions
+            *         {String} currentWeatherConditionsSettings The current weather conditions plugin settings
+            * @return {String} weatherIconStringHtmlMarkup The string HTML markup of the weather icon
+            */
+            function getWeatherIconStringHtmlMarkup (weatherData, currentWeatherConditionsSettings) {
+                
+                // Return an empty string if the 'weatherIcon' plugin setting is 'false',
+                // otherwise, return a string HTML markup including the weather icon, if the weather icon plugin setting is 'true'
+
+                let weatherIconStringHtmlMarkup = "";
+
+                if (currentWeatherConditionsSettings.weatherIcon === true)
+                {
+                    weatherIconStringHtmlMarkup = 
+                        '<p>' +
+                            '<img src="https://www.weatherbit.io/static/img/icons/' + sanitizeHTML(weatherData.weather.icon) + '.png">' +
+                        '</p>';
+                }
+
+                return weatherIconStringHtmlMarkup;
+            }
+
+            /**
+            * Get the string HTML markup of the weather message
+            * @param  {Object} weatherData The weather data object retrieved from Weatherbit.io containing the current weather conditions
+            *         {String} currentWeatherConditionsSettings The current weather conditions plugin settings
+            * @return {String} weatherMessageStringHtmlMarkup The string HTML markup of the weather message
+            */
+            function getWeatherMessageStringHtmlMarkup (weatherData, currentWeatherConditionsSettings) {
+                
+                // Get the weather message from the 'weatherMessage' plugin setting
+                let weatherMessageStringHtmlMarkup = currentWeatherConditionsSettings.weatherMessage;
+                
+                // Get and sanitize our needed current weather conditions from the 'weatherData' object retrieved from Weatherbit.io
+                let city = sanitizeHTML(weatherData.city_name);
+                let state = sanitizeHTML(weatherData.state_code);
+                let conditions = sanitizeHTML(weatherData.weather.description);
+                let temperature = sanitizeHTML(weatherData.temp) + '&#8451';    // Note: The current Weatherbit.io API call returns the temperature in Celsius
+
+                // If the 'temperatureScale' plugin setting is 'Fahrenheit', convert the current Celsius to Fahrenheit
+                if (currentWeatherConditionsSettings.temperatureScale === 'Fahrenheit')
+                {
+                    temperature = celciusToFahrenheit(temperature) + '&#8457';
+                }
+
+                // Update the different placeholders of the weather message with its relating weather data retrieved/resolved above
+                weatherMessageStringHtmlMarkup = weatherMessageStringHtmlMarkup.replace('{City}', city);
+                weatherMessageStringHtmlMarkup = weatherMessageStringHtmlMarkup.replace('{State}', state);
+                weatherMessageStringHtmlMarkup = weatherMessageStringHtmlMarkup.replace('{Conditions}', conditions);
+                weatherMessageStringHtmlMarkup = weatherMessageStringHtmlMarkup.replace('{Temperature}', temperature);
+
+                return '<p>' + weatherMessageStringHtmlMarkup + '</p>';
+            }
+
+        }
+	</script>
+</body>
+</html>
