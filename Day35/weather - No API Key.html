@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<title>Weather App</title>
+
+	<style type="text/css">
+		body {
+			margin: 1em auto;
+			max-width: 30em;
+			width: 88%;
+		}
+        .bold-text {
+            font-weight: 700;
+        }
+        .margin-bottom-20 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+	<h1>Weather App</h1>
+
+	<div id="app" arial-live="polite">Checking the weather near you...</div>
+
+    <!-- Polyfill bundle from Polyfill.io to ensure browser backwards compatibility with the usage of Promise and the Fetch API -->
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default%2Cfetch"></script>
+
+	<script>
+		
+        // Get #app element
+        var app = document.querySelector('#app');
+
+        // Weatherbit.io API Key
+        var weatherApiKey = 'Your-API-Key';
+
+        // Get weather on page load
+        getWeather();
+
+        /**
+        * Get the current weather, based on the current device's IP data
+        */
+        function getWeather() {
+
+            // Variable to store the IP data retrieved from https://ipapi.co/
+            let ipData;
+
+            // Get the IP data of the current device
+            fetch('https://ipapi.co/json').then(function (response) {
+
+				if (response.ok) {
+					return response.json();
+				} else {
+					return Promise.reject(response);
+                }
+                
+			}).then(function (data) {
+
+                // Store the IP data to a variable
+                ipData = data;
+
+                // Using the latitude and longitude from the IP data, get the current weather conditions
+                return fetch('https://api.weatherbit.io/v2.0/current?lat=' + ipData.latitude + '&lon=' + ipData.longitude + '&units=I&key='+ weatherApiKey);
+
+            }).then(function (response) {
+
+                if (response.ok) {
+					return response.json();
+				} else {
+					return Promise.reject(response);
+                }
+
+            }).then(function (weatherData){
+
+                // Render the current weather conditions, based on the weather data retrieved using the IP data
+                renderWeather(weatherData.data[0]);
+
+			}).catch(function (error) {
+
+                app.textContent = "Something went wrong retrieving the current weather conditions.";
+                
+            });
+            
+        }
+
+        /**
+        * Render current weather conditions
+        * @param  {Object} weatherData  The weather data retrieved from weatherbit.io using the current device's IP address
+        */
+        function renderWeather (weatherData) {
+            
+            app.innerHTML = 
+                '<h2>Current Weather Conditions</h2>' +
+                '<div id="place">' + 
+                    sanitizeHTML(weatherData.city_name) + ', ' + sanitizeHTML(weatherData.state_code) + ', ' + sanitizeHTML(weatherData.country_code) + 
+                '</div>' +
+                '<div id="datetime">' + 
+                    utcDateTimeToLocalDate(sanitizeHTML(weatherData.ob_time)) + 
+                '</div>' +
+                '<div id="weather-icon">' + 
+                    '<img src="' + sanitizeHTML(weatherData.weather.icon) + '.png" alt="' + sanitizeHTML(weatherData.weather.description) + '">' +
+                '</div>' +
+                '<div id="temperature" class="bold-text">' + 
+                    sanitizeHTML(weatherData.temp) + '&#8457 (' + fahrenheitToCelcius(sanitizeHTML(weatherData.temp)) + '&#8451)' +
+                '</div>' +
+                '<div id="weather-description" class="bold-text margin-bottom-20">' + 
+                    sanitizeHTML(weatherData.weather.description) +
+                '</div>' +
+                '<div id="wind-speed-and-direction">' + 
+                    'Wind: ' + metersPerSecondToMilesPerHour(sanitizeHTML(weatherData.wind_spd)) + ' MPH (' + Math.ceil(sanitizeHTML(weatherData.wind_spd)) + ' M/S), ' + sanitizeHTML(weatherData.wind_cdir_full).toUpperCase() + 
+                '</div>' +
+                '<div id="humidity">' + 
+                    'Humidity: ' + sanitizeHTML(weatherData.rh) + '%' +
+                '</div>' +
+                '<div id="dew-point">' + 
+                    'Dew Point: ' + sanitizeHTML(weatherData.dewpt) + '&#8457 (' + fahrenheitToCelcius(sanitizeHTML(weatherData.dewpt)) + '&#8451)' +
+                '</div>' +
+                '<div id="uv-index">' + 
+                    'UV Index: ' + sanitizeHTML(weatherData.uv) + 
+                '</div>' +
+                '<div id="visibility">' + 
+                    'Visibility: ' + kilometersToMiles(sanitizeHTML(weatherData.vis)) + ' MI (' + sanitizeHTML(weatherData.vis) + ' KM)' + 
+                '</div>';
+
+        }
+
+        /**
+        * Sanitize and encode all HTML in a user-submitted string
+        * @param  {String} str  The user-submitted string
+        * @return {String} str  The sanitized string
+        */
+        function sanitizeHTML (str) {
+            
+            var temp = document.createElement('div');
+            temp.textContent = str;
+
+            return temp.innerHTML;
+
+        }
+        
+        /**
+        *  UTC Date Time to Local Date conversion
+        * @param  {String} utcDateTime  The UTC Date Time-submitted string
+        * @return {String} localDate  The Local Date string
+        */
+        function utcDateTimeToLocalDate (utcDateTime) {
+
+            // Notes: 
+            // 1. The Date constructor converts the UTC Date Time (e.g., "2020-06-16 05:20") into Local Date Time (e.g., "Tue Jun 16 2020 05:20:00 GMT-0500 (Central Daylight Time)")
+            // 2. The .toDateString() method returns just the "Date" part (e.g., "Tue Jun 16 2020") of the Local Date Time
+            var localDate = new Date(utcDateTime).toDateString();
+            
+            return localDate;
+        }
+
+        /**
+        *  Fahrenheit to Celsius conversion
+        * @param  {Number} fahrenheitTemperature  The Fahrenheit-submitted number
+        * @return {Number} celsiusTemperature  The Celsius number
+        */
+        function fahrenheitToCelcius (fahrenheitTemperature) {
+            
+            var celsiusTemperature = Math.ceil((fahrenheitTemperature - 32) * 5 / 9);
+
+            return celsiusTemperature;
+
+        }
+
+        /**
+        *  Meters Per Second to Miles Per Hour conversion
+        * @param  {Number} metersPerSecondSpeed  The Meters Per Second-submitted number
+        * @return {Number} milesPerHourSpeed  The Miles Per Hour number
+        */
+        function metersPerSecondToMilesPerHour (metersPerSecondSpeed) {
+
+            var milesPerHourSpeed = Math.ceil(metersPerSecondSpeed / 0.44704);
+
+            return milesPerHourSpeed;
+
+        }
+
+        /**
+        *  Kilometers to Miles conversion
+        * @param  {Number} kilometersDistance  The Kilometers-submitted number
+        * @return {Number} milesDistance  The Miles number
+        */
+        function kilometersToMiles (kilometersDistance) {
+
+            var milesDistance = Math.ceil(kilometersDistance * 0.6214);
+
+            return milesDistance;
+
+        }
+         
+	</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+Project
+-------
+
+Weather App
+
+
+Description
+-----------
+
+Build an app that gets a user’s location and displays their current weather information.
+
+The template includes a single HTML element with an ID of #app where we’ll render our weather information.
+
+<div id="app">Checking the weather near you...</div>
+
+For this project, you’ll use the free ipapi service (https://ipapi.co/) to get a user’s location (you specifically want this endpoint: https://ipapi.co/json).
+
+You’ll use the returned location data to get the weather data itself from WeatherBit (https://www.weatherbit.io/api). You will need to create a free account for this one.
+
+The WeatherBit API can automatically detect a person’s location, but for learning purposes, use ipapi instead.
+
+WeatherBit also has an API for weather icons (https://www.weatherbit.io/api/codes). Documentation for this one is a bit… lacking. This can be common with APIs, so figuring out how to make this work is an important learning experience, too.
+
+It’s entirely up to you how to display the data in the UI.
+
+The Math
+
+The API returns temperatures in Celcius.
+
+If you want to display them in Farenheit, let me save you from having to Google the math for converting temperatures. Here’s what you need to know.
+
+To convert Farenheit to Celcius, subtract 32 from the temperature, then multiply it by 5 divided by 9.
+
+var cel = (temp - 32) * 5 / 9;
+
+To convert from Celcius to Farenheit, multiply the temperature by 9 divided by 5, then add 32.
+
+var far = (temp * 9 / 5) + 32;
